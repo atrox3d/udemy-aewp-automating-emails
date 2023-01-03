@@ -1,6 +1,8 @@
 import smtplib
+from email.mime.base import MIMEBase
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from email import encoders
 
 from secret import outlook_mail as om
 from secret import mail_recipients as mr
@@ -19,6 +21,14 @@ body = """
 """
 mimetext = MIMEText(body, 'html')
 message.attach(mimetext)
+
+attachment_path = 'Hermitage_cat.jpeg'
+attachment_file = open(attachment_path, 'rb')
+payload = MIMEBase('application', 'octet-stream')
+payload.set_payload(attachment_file.read())
+encoders.encode_base64(payload)
+payload.add_header('Content-Disposition', 'attachment', filename=attachment_path)
+message.attach(payload)
 
 server = smtplib.SMTP('smtp.office365.com', 587)
 server.starttls()
